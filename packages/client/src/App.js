@@ -16,7 +16,7 @@ class App extends Component {
     const ref = this.props.db
       .collection('screenshots')
       .orderBy('ts', 'desc')
-      .limit(40);
+      .limit(20);
     this.unsubsribe = ref.onSnapshot((coll) => {
       this.setState({
         shots: coll.docs,
@@ -52,8 +52,8 @@ class App extends Component {
         />
       );
     }
-    return (
-      this.state.shots ? (
+    if (this.state.shots) {
+      return (
         <ul>
           {
             this.state.shots.map(s => (
@@ -69,9 +69,10 @@ class App extends Component {
             ))
           }
         </ul>
-      ) : (
-        <p>Now loading...</p>
-      )
+      );
+    }
+    return (
+      <p>Now loading...</p>
     );
   }
 }
