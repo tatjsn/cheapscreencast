@@ -14,6 +14,10 @@ const db = admin.firestore();
 const ipAddress = ip.address();
 const port = 5000;
 
+function createFileName(timeStamp) {
+  return crypto.createHash('md5').update(timeStamp).digest('hex').slice(0, 8);
+}
+
 function addOneScreenshot(fileName) {
   return db.collection('screenshots').add({
     path: `http://${ipAddress}:${port}/${fileName}.jpg`,
@@ -23,7 +27,8 @@ function addOneScreenshot(fileName) {
 
 const intervalId = setInterval(async () => {
   try {
-    const fileName = new Date().toISOString();
+    const timeStamp = new Date().toISOString();
+    const fileName = createFileName(timeStamp);
     const path = await screenshot({ filename: `screenshots/${fileName}.jpg` });
     console.log(path);
     await addOneScreenshot(fileName);
