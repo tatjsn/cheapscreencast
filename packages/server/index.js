@@ -11,28 +11,23 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-// screenshot({ filename: 'screenshots/shot.jpg' })
-//   .then(path => {
-//     console.log('path', path);
-//   })
-//   .catch(err => {
-//     console.log(err);
-//   });
+const ipAddress = ip.address();
+const port = 5000;
 
-
-function addOneScreenshot(path) {
+function addOneScreenshot(fileName) {
   return db.collection('screenshots').add({
-    path,
+    path: `http://${ipAddress}:${port}/${fileName}.jpg`,
     ts: admin.firestore.FieldValue.serverTimestamp(),
   });
 }
 
 const intervalId = setInterval(async () => {
   try {
-    const path = await screenshot({ filename: 'screenshots/shot.jpg' });
+    const fileName = new Date().toISOString();
+    const path = await screenshot({ filename: `screenshots/${fileName}.jpg` });
     console.log(path);
-    await addOneScreenshot(path);
-    console.log('Added path to db');
+    await addOneScreenshot(fileName);
+    console.log('Notified');
   } catch (err) {
     console.log(err);
     clearInterval(intervalId);
@@ -42,5 +37,8 @@ const intervalId = setInterval(async () => {
 const app = express();
 
 app.use(express.static('screenshots'));
-app.listen(5000);
-console.log(`ip = ${ip.address()}`);
+app.listen(port);
+
+console.log(`ip:port = ${ipAddress}:${port}`);
+
+
